@@ -17,11 +17,15 @@ class Chip8{
     unsigned short stack[16];
     unsigned short sp;
     unsigned char key[16];
+    bool drawFlag = false;
 public:
     explicit Chip8() = default;
     void Init();
     void EmulateCycle();
-    void LoadGame(char* path);
+    void LoadGame();
+    bool GetDrawFlag(){ return drawFlag; }
+    unsigned char * GetPixels(){ return gfx; }
+    unsigned char * GetKeys(){ return key; }
 };
 
 #endif /* __CHIP8_HPP */

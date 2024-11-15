@@ -52,18 +52,80 @@ void Chip8::EmulateCycle()
             break;
     
         case 0x000E: // 0x00EE: Returns from subroutine          
-            pc = stack[sp];
             --sp;
+            pc = stack[sp];
             break;
-    
         default:
             printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
         }
+        break;
+    case 0x1000:
+        pc = opcode & 0x0FFF;
         break;
     case 0x2000:
         stack[sp] = pc;
         ++sp;
         pc = opcode & 0x0FFF;
+        break;
+    case 0x3000:
+        char v = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        char kk = static_cast<unsigned char>(opcode);
+        if(V[v] == kk)
+        {
+            pc+=2;
+        }
+    case 0x4000:
+        char v = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        char kk = static_cast<unsigned char>(opcode);
+        if(V[v] != kk)
+        {
+            pc+=2;
+        }
+    case 0x5000:
+        char x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        char y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
+        if(V[y] == V[x])
+        {
+            pc+=2;
+        }
+    case 0x6000:
+        char x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        char kk = static_cast<unsigned char>(opcode);
+        V[x] = kk;
+    case 0x7000:
+        char x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        char kk = static_cast<unsigned char>(opcode);
+        V[x] += kk;
+    case 0x8000:
+        switch (opcode & 0x000F)
+        {
+        case 0x0001:
+            /* code */
+            break;
+        case 0x0002:
+            /* code */
+            break;
+        case 0x0003:
+            /* code */
+            break;
+        case 0x0004:
+            /* code */
+            break;
+        case 0x0005:
+            /* code */
+            break;
+        case 0x0006:
+            /* code */
+            break;
+        case 0x0007:
+            /* code */
+            break;
+        case 0x000E:
+            /* code */
+            break;
+        default:
+            printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
+        }
         break;
     case 0xA000: // ANNN: Sets I to the address NNN
         // Execute opcode

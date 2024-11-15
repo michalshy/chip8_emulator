@@ -33,6 +33,7 @@ void DrawGraphics(unsigned char * beg)
                 std::cout << " ";
             }
         }
+        std::cout<<'\n';
     }
     
 }

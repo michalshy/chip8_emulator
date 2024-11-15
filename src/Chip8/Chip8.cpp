@@ -1,5 +1,7 @@
 #include "Chip8.hpp"
 #include <cstdio>
+#include <time.h>
+#include <stdlib.h>
 
 unsigned char chip8_fontset[80] =
 { 
@@ -23,6 +25,9 @@ unsigned char chip8_fontset[80] =
 
 void Chip8::Init()
 {
+    //init time
+    srand(time(NULL)); 
+
     // Initialize registers and memory once
     pc      = 0x200;
     opcode  = 0;
@@ -37,7 +42,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/glitchGhost.ch8", "rb");
+    file = fopen("../games/pong.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -243,36 +248,89 @@ void Chip8::EmulateCycle()
         loc = opcode & 0x0FFF; 
         pc = loc + V[0];
         break;
-
+    case 0xC000:
+        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
+        y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
+        V[x] = rand() & V[y];
+        pc += 2;
+        break;
     case 0xD000:		   
         {
-            unsigned short X = V[(opcode & 0x0F00) >> 8];
-            unsigned short Y = V[(opcode & 0x00F0) >> 4];
-            unsigned short height = opcode & 0x000F;
-            unsigned short pixel;
-
-            V[0xF] = 0;
-            for (int yline = 0; yline < height; yline++)
-            {
+        unsigned short x = V[(opcode & 0x0F00) >> 8];
+        unsigned short y = V[(opcode & 0x00F0) >> 4];
+        unsigned short height = opcode & 0x000F;
+        unsigned short pixel;
+        
+        V[0xF] = 0;
+        for (int yline = 0; yline < height; yline++)
+        {
             pixel = memory[I + yline];
             for(int xline = 0; xline < 8; xline++)
             {
-                if((pixel & (0x80 >> xline)) != 0)
-                {
-                if(gfx[(X + xline + ((Y + yline) * 64))] == 1)
-                    V[0xF] = 1;                                 
-                gfx[X + xline + ((Y + yline) * 64)] ^= 1;
-                }
+            if((pixel & (0x80 >> xline)) != 0)
+            {
+                if(gfx[(x + xline + ((y + yline) * 64))] == 1)
+                V[0xF] = 1;                                 
+                gfx[x + xline + ((y + yline) * 64)] ^= 1;
             }
             }
-
-            drawFlag = true;
-            pc += 2;
+        }
+        
+        drawFlag = true;
+        pc += 2;
         }
         break;
-    default:
-        printf ("Unknown opcode: 0x%X\n", opcode);
-    }
+    case 0xE000:
+        switch(opcode & 0x00FF)
+        {
+            // EX9E: Skips the next instruction 
+            // if the key stored in VX is pressed
+            case 0x009E:
+                if(key[V[(opcode & 0x0F00) >> 8]] != 0)
+                    pc += 4;
+                else
+                    pc += 2;
+                break;
+            case 0x00A1:
+                break;
+        default:
+            printf ("Unknown opcode: 0x%X\n", opcode);
+        }
+    case 0xF000:
+        switch(opcode & 0x00FF)
+        {
+            // EX9E: Skips the next instruction 
+            // if the key stored in VX is pressed
+            case 0x0007:
+                pc+=2;
+                break;
+            case 0x000A:
+                pc+=2;
+                break;
+            case 0x0015:
+                pc+=2;
+                break;
+            case 0x0018:
+                pc+=2;
+                break;
+            case 0x001E:
+                pc+=2;
+                break;
+            case 0x0029:
+                pc+=2;
+                break;
+            case 0x0033:
+                pc+=2;
+                break;
+            case 0x0055:
+                pc+=2;
+                break;
+            case 0x0065:
+                pc+=2;
+                break;
+        default:
+            printf ("Unknown opcode: 0x%X\n", opcode);
+        }
    
     // Update timers
     if(delay_timer > 0)
@@ -287,4 +345,5 @@ void Chip8::EmulateCycle()
         }
         --sound_timer;
     }
+}
 }

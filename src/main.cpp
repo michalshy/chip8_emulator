@@ -19,6 +19,7 @@ unsigned char keysLayout[16] =
 
 void DrawGraphics(unsigned char * beg)
 {
+    
     SetConsoleCursorPosition(hConsole, pos);
     for(int i = 0; i < HEIGHT; i ++)
     {
@@ -26,11 +27,11 @@ void DrawGraphics(unsigned char * beg)
         {
             if (beg[i * j + j] == 1)
             {
-                std::cout << "#";
+                printf("#");
             }
             else
             {
-                std::cout << " ";
+                printf(" ");
             }
         }
         std::cout<<'\n';

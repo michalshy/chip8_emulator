@@ -87,79 +87,60 @@ void Chip8::EmulateCycle()
             printf ("Unknown opcode [0x0000]: 0x%X\n", opcode);          
         }
         break;
-    case 0x1000:
+    case 0x1000: //1NNN - JUMP
         pc = opcode & 0x0FFF;
         break;
-    case 0x2000:
+    case 0x2000: //CALL SUBROUTING
         stack[sp] = pc;
         ++sp;
         pc = opcode & 0x0FFF;
         break;
-    case 0x3000:
-        v = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        kk = static_cast<unsigned char>(opcode);
-        if(V[v] == kk)
+    case 0x3000: //Skip id Vv == kk
+        if(V[(opcode >> 8) & 0x0f] == static_cast<unsigned char>(opcode))
         {
             pc+=2;
         }
         pc += 2;
         break;
     case 0x4000:
-        v = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        kk = static_cast<unsigned char>(opcode);
-        if(V[v] != kk)
+        if(V[(opcode >> 8) & 0x0f] != static_cast<unsigned char>(opcode))
         {
             pc+=2;
         }
         pc += 2;
         break;
     case 0x5000:
-        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-        if(V[y] == V[x])
+        if(V[(opcode >> 8) & 0x0f] == V[(opcode >> 4) & 0x0f])
         {
             pc+=2;
         }
         pc += 2;
         break;
     case 0x6000:
-        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        kk = static_cast<unsigned char>(opcode);
-        V[x] = kk;
+        V[(opcode >> 8) & 0x0f] = opcode;
         pc += 2;
         break;
     case 0x7000:
-        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        kk = static_cast<unsigned char>(opcode);
-        V[x] += kk;
+        V[(opcode >> 8) & 0x0f] += opcode;
         pc += 2;
         break;
     case 0x8000:
         switch (opcode & 0x000F)
         {
         case 0x0001:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            V[x] = (V[x] | V[y]);
+            V[(opcode >> 8) & 0x0f] = (V[(opcode >> 8) & 0x0f] | V[(opcode >> 4) & 0x0f]);
             pc += 2;
             break;
         case 0x0002:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            V[x] = (V[x] & V[y]);
+            V[(opcode >> 8) & 0x0f] = (V[(opcode >> 8) & 0x0f] & V[(opcode >> 4) & 0x0f]);
             pc += 2;
             break;
         case 0x0003:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            V[x] = (V[x] ^ V[y]);
+            V[(opcode >> 8) & 0x0f] = (V[(opcode >> 8) & 0x0f] ^ V[(opcode >> 4) & 0x0f]);
             pc += 2;
             break;
         case 0x0004:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            res = static_cast<unsigned short>(V[x]) + static_cast<unsigned short>(V[y]);
-            if(res > 255)
+            if((V[(opcode >> 8) & 0x0f] + V[(opcode >> 4) & 0x0f]) > 255)
             {
                 V[0xF] = 1;
             }
@@ -167,13 +148,11 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[x] = static_cast<unsigned char>(res);
+            V[x] = V[(opcode >> 8) & 0x0f] + V[(opcode >> 4) & 0x0f];
             pc += 2;
             break;
         case 0x0005:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            if(V[x] > V[y])
+            if(V[(opcode >> 8) & 0x0f] > V[(opcode >> 4) & 0x0f])
             {
                 V[0xF] = 1;
             }
@@ -181,13 +160,11 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[x] -= V[y];
+            V[(opcode >> 8) & 0x0f] -= V[(opcode >> 4) & 0x0f];
             pc += 2;
             break;
         case 0x0006:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            if((V[x] & 0b00000001) == 1)
+            if((V[(opcode >> 8) & 0x0f] & 0b00000001) == 1)
             {
                 V[0xF] = 1;
             }
@@ -195,13 +172,11 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[x] = V[x]/2;
+            V[(opcode >> 8) & 0x0f] = V[(opcode >> 8) & 0x0f]/2;
             pc += 2;
             break;
         case 0x0007:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            if(V[y] > V[x])
+            if(V[(opcode >> 4) & 0x0f] > V[(opcode >> 8) & 0x0f])
             {
                 V[0xF] = 1;
             }
@@ -209,13 +184,11 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[y] -= V[x];
+            V[(opcode >> 4) & 0x0f] -= V[(opcode >> 8) & 0x0f];
             pc += 2;
             break;
         case 0x000E:
-            x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-            y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-            if((V[x] & 0b10000000) == 1)
+            if((V[(opcode >> 8) & 0x0f] & 0b10000000) == 1)
             {
                 V[0xF] = 1;
             }
@@ -223,7 +196,7 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[x] = V[x] * 2;
+            V[(opcode >> 8) & 0x0f] = V[(opcode >> 8) & 0x0f] * 2;
             pc += 2;
             break;
         default:
@@ -231,9 +204,7 @@ void Chip8::EmulateCycle()
         }
         break;
     case 0x9000:
-        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-        if(V[x] != V[y])
+        if(V[(opcode >> 8) & 0x0f] != V[(opcode >> 4) & 0x0f])
         {
             pc += 2;
         }
@@ -249,9 +220,7 @@ void Chip8::EmulateCycle()
         pc = loc + V[0];
         break;
     case 0xC000:
-        x = static_cast<unsigned char>((opcode >> 8) & 0x0f);
-        y = static_cast<unsigned char>((opcode >> 4) & 0x0f);
-        V[x] = rand() & V[y];
+        V[(opcode >> 8) & 0x0f] = rand() & V[(opcode >> 4) & 0x0f];
         pc += 2;
         break;
     case 0xD000:		   
@@ -292,6 +261,10 @@ void Chip8::EmulateCycle()
                     pc += 2;
                 break;
             case 0x00A1:
+                if(key[V[(opcode & 0x0F00) >> 8]] != 1)
+                    pc += 4;
+                else
+                    pc += 2;
                 break;
         default:
             printf ("Unknown opcode: 0x%X\n", opcode);
@@ -341,7 +314,7 @@ void Chip8::EmulateCycle()
     {
         if(sound_timer == 1)
         {
-            printf("BEEP!\n");
+            //printf("BEEP!\n");
         }
         --sound_timer;
     }

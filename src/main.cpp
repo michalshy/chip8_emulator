@@ -56,21 +56,24 @@ int main(int, char**){
     //SetupInput();
 
     //Initialize Chip8 system and load game;
-    myChip.Init();
-    myChip.LoadGame();
-    while (1)
-    {
-        //proceed one cycle
-        myChip.EmulateCycle();
+    
+    //time to test drawing
 
-        //if emulator wants to draw -> draw
-        if(myChip.GetDrawFlag())
-        {
-            DrawGraphics(myChip.GetPixels());
-        }
+    // myChip.Init();
+    // myChip.LoadGame();
+    // while (1)
+    // {
+    //     //proceed one cycle
+    //     myChip.EmulateCycle();
 
-        SetKeys(myChip.GetKeys());
-    }
+    //     //if emulator wants to draw -> draw
+    //     if(myChip.GetDrawFlag())
+    //     {
+    //         DrawGraphics(myChip.GetPixels());
+    //     }
+
+    //     SetKeys(myChip.GetKeys());
+    // }
     return 0;
 }
 

@@ -1,80 +1,37 @@
 #include "Chip8/Chip8.hpp"
-#include "Timer/Timer.hpp"
-
-HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-COORD pos = {0, 0};
-
-constexpr unsigned short WIDTH = 64;
-constexpr unsigned short HEIGHT = 32;
+#include "raylib.h"
 
 Chip8 myChip;
 
-unsigned char keysLayout[16] = 
+u8 keysLayout[16] = 
 {'1','2','3','4',
 'q','w','e','r',
 'a','s','d','f',
 'z','x','c','v'};
 
-
-void DrawGraphics(unsigned char * beg)
-{ 
-    SetConsoleCursorPosition(hConsole, pos);
-    for(int i = 0; i < HEIGHT; i ++)
-    {
-        for(int j = 0; j < WIDTH; j++)
-        {
-            if (beg[i * j + j] == 1)
-            {
-                std::cout<<"#";
-            }
-            else
-            {
-                std::cout<<" ";
-            }
-        }
-        std::cout<<std::endl;
-    } 
-}
-
 void SetKeys(unsigned char * keys)
 {
-    for(int i = 0; i < 16; i++)
+    for(u8 i = 0; i < 16; i++)
     {
-        if(GetAsyncKeyState(keysLayout[i]) & 0x8000)
-        {
-            keys[i] = 1;
-        }
+        
     }
 }
 
 int main(int, char**){
-    Timer t = Timer();
-    
-    //Set up rendering system and register input callbacks
-    //SetupGraphics();
-    //SetupInput();
-
-    //Initialize Chip8 system and load game;
-    
-    //time to test drawing
+    InitWindow(640,320,"chip8_interpreter");
 
     myChip.Init();
     myChip.LoadGame();
     
-    t.setInterval([&](){
-        //proceed one cycle
-        myChip.EmulateCycle();
+    while(!WindowShouldClose())
+    {
+        BeginDrawing();
 
-        //if emulator wants to draw -> draw
-        if(myChip.GetDrawFlag())
-        {
-            DrawGraphics(myChip.GetPixels());
-        }
+            ClearBackground(RAYWHITE);
+            DrawText("yeey!", 190, 200, 20, LIGHTGRAY);
 
-        SetKeys(myChip.GetKeys());
-    }, 200);
-    while(1);
-    
+        EndDrawing();
+    }    
     return 0;
 }
 

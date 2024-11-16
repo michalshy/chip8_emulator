@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-unsigned char chip8_fontset[80] =
+u8 chip8_fontset[80] =
 { 
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -49,8 +49,8 @@ void Chip8::LoadGame()
         return;
     }
 
-    char c;
-    int i = 0;
+    u8 c;
+    u64 i = 0;
     while(fread(&c, sizeof(c), 1, file) == 1)
     {
         memory[i + 512] = c;
@@ -223,10 +223,10 @@ void Chip8::EmulateCycle()
         break;
     case 0xD000:		   
         {
-        unsigned short x = V[(opcode & 0x0F00) >> 8];
-        unsigned short y = V[(opcode & 0x00F0) >> 4];
-        unsigned short height = opcode & 0x000F;
-        unsigned short pixel;
+        u16 x = V[(opcode & 0x0F00) >> 8];
+        u16 y = V[(opcode & 0x00F0) >> 4];
+        u16 height = opcode & 0x000F;
+        u16 pixel;
         
         V[0xF] = 0;
         for (int yline = 0; yline < height; yline++)
@@ -313,7 +313,7 @@ void Chip8::EmulateCycle()
     {
         if(sound_timer == 1)
         {
-            //printf("BEEP!\n");
+            printf("BEEP!\n");
         }
         --sound_timer;
     }

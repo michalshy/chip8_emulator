@@ -3,32 +3,43 @@
 
 Chip8 myChip;
 
-u8 keysLayout[16] = 
-{'1','2','3','4',
-'q','w','e','r',
-'a','s','d','f',
-'z','x','c','v'};
 
-void SetKeys(unsigned char * keys)
+
+void SetKeys(u8 * keys)
 {
     for(u8 i = 0; i < 16; i++)
     {
-        
+        //TODO: Keys handling
+    }
+}
+
+void DrawChip(u8 * pixels)
+{
+    for (int i = 0; i < CHIP8_SCREEN_HEIGHT; i++)
+    {
+        for(int j = 0; j < CHIP8_SCREEN_WIDTH; j++)
+        {
+            if(pixels[i*j + j] == 1)
+                DrawRectangle(j * 10, i * 10, 10, 10, BLACK);
+        }
     }
 }
 
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
+    SetTargetFPS(24);
 
     myChip.Init();
     myChip.LoadGame();
     
     while(!WindowShouldClose())
     {
+        myChip.EmulateCycle();
+
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-            DrawText("yeey!", 190, 200, 20, LIGHTGRAY);
+            DrawChip(myChip.GetPixels());
 
         EndDrawing();
     }    

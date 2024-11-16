@@ -1,6 +1,11 @@
 #ifndef __CHIP8_HPP
 #define __CHIP8_HPP
 
+#include <iostream>
+#include <windows.h>
+#include <chrono>
+#include <ctime>
+
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
 // 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
 // 0x200-0xFFF - Program ROM and work RAM
@@ -24,7 +29,11 @@ public:
     void EmulateCycle();
     void LoadGame();
     bool GetDrawFlag(){ return drawFlag; }
-    unsigned char * GetPixels(){ return gfx; }
+    unsigned char * GetPixels()
+    { 
+        drawFlag = false;    
+        return gfx; 
+    }
     unsigned char * GetKeys(){ return key; }
 };
 

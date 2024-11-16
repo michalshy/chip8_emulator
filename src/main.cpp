@@ -1,9 +1,8 @@
-#include <iostream>
-#include <windows.h>
 #include "Chip8/Chip8.hpp"
+#include "Timer/Timer.hpp"
 
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-COORD pos = {0, 8};
+COORD pos = {0, 0};
 
 constexpr unsigned short WIDTH = 64;
 constexpr unsigned short HEIGHT = 32;
@@ -18,8 +17,7 @@ unsigned char keysLayout[16] =
 
 
 void DrawGraphics(unsigned char * beg)
-{
-    
+{ 
     SetConsoleCursorPosition(hConsole, pos);
     for(int i = 0; i < HEIGHT; i ++)
     {
@@ -27,16 +25,15 @@ void DrawGraphics(unsigned char * beg)
         {
             if (beg[i * j + j] == 1)
             {
-                printf("#");
+                std::cout<<"#";
             }
             else
             {
-                printf(" ");
+                std::cout<<" ";
             }
         }
-        std::cout<<'\n';
-    }
-    
+        std::cout<<std::endl;
+    } 
 }
 
 void SetKeys(unsigned char * keys)
@@ -51,6 +48,8 @@ void SetKeys(unsigned char * keys)
 }
 
 int main(int, char**){
+    Timer t = Timer();
+    
     //Set up rendering system and register input callbacks
     //SetupGraphics();
     //SetupInput();
@@ -59,21 +58,24 @@ int main(int, char**){
     
     //time to test drawing
 
-    // myChip.Init();
-    // myChip.LoadGame();
-    // while (1)
-    // {
-    //     //proceed one cycle
-    //     myChip.EmulateCycle();
+    myChip.Init();
+    myChip.LoadGame();
+    
+    t.setInterval([&](){
+        //proceed one cycle
+        myChip.EmulateCycle();
 
-    //     //if emulator wants to draw -> draw
-    //     if(myChip.GetDrawFlag())
-    //     {
-    //         DrawGraphics(myChip.GetPixels());
-    //     }
+        //if emulator wants to draw -> draw
+        if(myChip.GetDrawFlag())
+        {
+            DrawGraphics(myChip.GetPixels());
+        }
 
-    //     SetKeys(myChip.GetKeys());
-    // }
+        SetKeys(myChip.GetKeys());
+    }, 200);
+    while(1);
+    
     return 0;
 }
+
 

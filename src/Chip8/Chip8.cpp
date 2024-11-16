@@ -42,7 +42,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/pong.ch8", "rb");
+    file = fopen("../games/IBM.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -57,8 +57,6 @@ void Chip8::LoadGame()
         i++;        
     }
 }
-char v, kk, x, y;
-unsigned short res, loc;
 void Chip8::EmulateCycle()
 {
     // Fetch Opcode
@@ -75,6 +73,7 @@ void Chip8::EmulateCycle()
             {
                 gfx[i] = 0;
             }
+            drawFlag = true;
             pc += 2;
             break;
     
@@ -117,11 +116,11 @@ void Chip8::EmulateCycle()
         pc += 2;
         break;
     case 0x6000:
-        V[(opcode >> 8) & 0x0f] = opcode;
+        V[(opcode & 0x0F00) >> 8] = (opcode & 0x00ff);
         pc += 2;
         break;
     case 0x7000:
-        V[(opcode >> 8) & 0x0f] += opcode;
+        V[(opcode & 0x0F00) >> 8] += (opcode & 0x00ff);
         pc += 2;
         break;
     case 0x8000:
@@ -148,7 +147,7 @@ void Chip8::EmulateCycle()
             {
                 V[0xF] = 0;
             }
-            V[x] = V[(opcode >> 8) & 0x0f] + V[(opcode >> 4) & 0x0f];
+            V[(opcode >> 8) & 0x0f] = V[(opcode >> 8) & 0x0f] + V[(opcode >> 4) & 0x0f];
             pc += 2;
             break;
         case 0x0005:
@@ -216,8 +215,7 @@ void Chip8::EmulateCycle()
         pc += 2;
         break;
     case 0xB000:
-        loc = opcode & 0x0FFF; 
-        pc = loc + V[0];
+        pc = (opcode & 0x0FFF) + V[0];
         break;
     case 0xC000:
         V[(opcode >> 8) & 0x0f] = rand() & V[(opcode >> 4) & 0x0f];
@@ -275,6 +273,7 @@ void Chip8::EmulateCycle()
             // EX9E: Skips the next instruction 
             // if the key stored in VX is pressed
             case 0x0007:
+                V[(opcode & 0x0F00) >> 8] = delay_timer;
                 pc+=2;
                 break;
             case 0x000A:

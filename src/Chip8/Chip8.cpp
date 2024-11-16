@@ -57,7 +57,7 @@ void Chip8::Init()
     {
         gfx[i] = 0;
     }
-    //CLEAR KESY
+    //CLEAR KEYS
     for(int i = 0; i < 16; i++)
     {
         key[i] = 0;
@@ -69,7 +69,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/test_opcode.ch8", "rb");
+    file = fopen("../games/pong.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");

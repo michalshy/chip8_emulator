@@ -1,3 +1,19 @@
-First I will try to provide working opcodes, so emulator can work in any environment (even CLI).
+## Semi functional CHIP-8 Interpreter
 
-Graphical layer will be implemented later (raycastlib?)
+working towards functional application, currently:
+ - opcodes mostly provided                      ✔️
+ - input provided                               ✔️
+ - graphic interface provided by raylib (❤️)    ✔️
+
+todo:
+ - fix opcodes :/                               ❌
+ - better interface                             ❌
+ - better code structure                        ❌
+ - exe release                                  ❌
+ - configurable application                     ❌
+ - super opcodes (?)                            ❌
+ - hardware port (?)                            ❌
+ - function pointers instead of switch statement❌
+ - improve graphics (filters - Hqx)             ❌
+
+After most of this statements, project will be marked as ready

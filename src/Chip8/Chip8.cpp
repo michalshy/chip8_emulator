@@ -33,10 +33,23 @@ void Chip8::Init()
     opcode  = 0;
     I       = 0;
     sp      = 0;
+    //CLEAR MEMORY
+    for(int i = 0; i < 4096; i++)
+    {
+        memory[i] = 0;
+    }
+    //LOAD FONTSET INTO MEMORY
     for(int i = 0; i < 80; i++)
     {
         memory[i] = chip8_fontset[i];
     }
+    //CLEAR DISPLAY
+    for(int i = 0; i < (CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH); i++)
+    {
+        gfx[i] = 0;
+    }
+
+    drawFlag = true;
 }
 
 void Chip8::LoadGame()
@@ -56,6 +69,8 @@ void Chip8::LoadGame()
         memory[i + 512] = c;
         i++;        
     }
+
+    fclose(file);
 }
 void Chip8::EmulateCycle()
 {
@@ -90,8 +105,8 @@ void Chip8::EmulateCycle()
         pc = opcode & 0x0FFF;
         break;
     case 0x2000: //CALL SUBROUTING
-        stack[sp] = pc;
         ++sp;
+        stack[sp] = pc;
         pc = opcode & 0x0FFF;
         break;
     case 0x3000: //Skip id Vv == kk
@@ -116,11 +131,11 @@ void Chip8::EmulateCycle()
         pc += 2;
         break;
     case 0x6000:
-        V[(opcode & 0x0F00) >> 8] = (opcode & 0x00ff);
+        V[(opcode >> 8) & 0x000F] = (opcode & 0x00ff);
         pc += 2;
         break;
     case 0x7000:
-        V[(opcode & 0x0F00) >> 8] += (opcode & 0x00ff);
+        V[(opcode >> 8) & 0x000F] += (opcode & 0x00ff);
         pc += 2;
         break;
     case 0x8000:
@@ -223,8 +238,8 @@ void Chip8::EmulateCycle()
         break;
     case 0xD000:		   
         {
-        u16 x = V[(opcode & 0x0F00) >> 8];
-        u16 y = V[(opcode & 0x00F0) >> 4];
+        u16 x = V[(opcode >> 8) & 0x000F];
+        u16 y = V[(opcode >> 4) & 0x000F];
         u16 height = opcode & 0x000F;
         u16 pixel;
         

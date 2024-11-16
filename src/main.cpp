@@ -3,8 +3,6 @@
 
 Chip8 myChip;
 
-
-
 void SetKeys(u8 * keys)
 {
     for(u8 i = 0; i < 16; i++)
@@ -19,28 +17,38 @@ void DrawChip(u8 * pixels)
     {
         for(int j = 0; j < CHIP8_SCREEN_WIDTH; j++)
         {
-            if(pixels[i*j + j] == 1)
+            if(pixels[(i*CHIP8_SCREEN_WIDTH) + j] == 0)
+            {
+                //DrawRectangle(j * 10, i * 10, 10, 10, WHITE);
+            }
+            else if(pixels[(i*CHIP8_SCREEN_WIDTH) + j] == 1)
+            {
                 DrawRectangle(j * 10, i * 10, 10, 10, BLACK);
+            }
         }
     }
 }
 
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-    SetTargetFPS(24);
+    SetTargetFPS(6);
 
     myChip.Init();
     myChip.LoadGame();
     
+    //First clear in control of raylib
+    ClearBackground(WHITE);
+    
     while(!WindowShouldClose())
     {
         myChip.EmulateCycle();
-
+        //rest drawing left for handle of CHIP-8
         BeginDrawing();
-
-            ClearBackground(RAYWHITE);
-            DrawChip(myChip.GetPixels());
-
+            if(myChip.GetDrawFlag())
+            {
+                ClearBackground(WHITE);
+                DrawChip(myChip.GetPixels());
+            }            
         EndDrawing();
     }    
     return 0;

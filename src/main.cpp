@@ -18,7 +18,7 @@ void SetKeys(unsigned char * keys)
 }
 
 int main(int, char**){
-    InitWindow(640,320,"chip8_interpreter");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
 
     myChip.Init();
     myChip.LoadGame();

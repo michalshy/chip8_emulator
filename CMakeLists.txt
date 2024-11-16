@@ -35,7 +35,8 @@ endif()
 set(SOURCES src/main.cpp
 src/Chip8/Chip8.cpp
 src/Chip8/Chip8.hpp
-src/Globals.hpp)
+src/Globals.hpp
+src/TypeDef.hpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11)
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp)

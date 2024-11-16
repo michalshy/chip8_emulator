@@ -1,10 +1,14 @@
-#include <cstdint>
+#ifndef __GLOBALS
+#define __GLOBALS
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef int8_t s8;
-typedef int16_t s16;
-typedef int32_t s32;
-typedef int64_t s64;
+#include "TypeDef.hpp"
+
+constexpr u8 CHIP8_SCREEN_WIDTH = 64;
+constexpr u8 CHIP8_SCREEN_HEIGHT = 32;
+
+constexpr u16 SCREEN_WIDTH = CHIP8_SCREEN_WIDTH * 10;    static_assert(SCREEN_WIDTH == 640);
+constexpr u16 SCREEN_HEIGHT = CHIP8_SCREEN_HEIGHT * 10;  static_assert(SCREEN_HEIGHT == 320);
+
+constexpr char const* TITLE = "CHIP8_INTERPRETER";
+
+#endif //__GLOBALS

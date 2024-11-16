@@ -30,31 +30,32 @@ void DrawChip(u8 * pixels)
 
 void CheckInput(u8 * key)
 {
-    if(IsKeyPressed(KEY_KP_1)) key[0] = 1;    
-    if(IsKeyPressed(KEY_KP_2)) key[1] = 1;    
-    if(IsKeyPressed(KEY_KP_3)) key[2] = 1;    
-    if(IsKeyPressed(KEY_KP_4)) key[3] = 1;    
-    if(IsKeyPressed(KEY_Q)) 
+    for(int i = 0; i < 16; i++)
     {
-        key[4] = 1;
-        printf("pressedq");    
+        key[i] = 0;
     }
-    if(IsKeyPressed(KEY_W)) key[5] = 1;    
-    if(IsKeyPressed(KEY_E)) key[6] = 1;    
-    if(IsKeyPressed(KEY_R)) key[7] = 1;    
-    if(IsKeyPressed(KEY_A)) key[8] = 1;    
-    if(IsKeyPressed(KEY_S)) key[9] = 1;    
-    if(IsKeyPressed(KEY_D)) key[10] = 1;    
-    if(IsKeyPressed(KEY_F)) key[11] = 1;    
-    if(IsKeyPressed(KEY_Z)) key[12] = 1;    
-    if(IsKeyPressed(KEY_X)) key[13] = 1;    
-    if(IsKeyPressed(KEY_C)) key[14] = 1;    
-    if(IsKeyPressed(KEY_V)) key[15] = 1;    
+
+    if(IsKeyDown(KEY_KP_1)) key[0] = 1;    
+    if(IsKeyDown(KEY_KP_2)) key[1] = 1;    
+    if(IsKeyDown(KEY_KP_3)) key[2] = 1;    
+    if(IsKeyDown(KEY_KP_4)) key[3] = 1;    
+    if(IsKeyDown(KEY_Q)) key[4] = 1;    
+    if(IsKeyDown(KEY_W)) key[5] = 1;    
+    if(IsKeyDown(KEY_E)) key[6] = 1;    
+    if(IsKeyDown(KEY_R)) key[7] = 1;    
+    if(IsKeyDown(KEY_A)) key[8] = 1;    
+    if(IsKeyDown(KEY_S)) key[9] = 1;    
+    if(IsKeyDown(KEY_D)) key[10] = 1;    
+    if(IsKeyDown(KEY_F)) key[11] = 1;    
+    if(IsKeyDown(KEY_Z)) key[12] = 1;    
+    if(IsKeyDown(KEY_X)) key[13] = 1;    
+    if(IsKeyDown(KEY_C)) key[14] = 1;    
+    if(IsKeyDown(KEY_V)) key[15] = 1;    
 }
 
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-    SetTargetFPS(12);
+    SetTargetFPS(120);
 
     InitAudioDevice();
 
@@ -73,7 +74,6 @@ int main(int, char**){
         BeginDrawing();
             if(myChip.GetDrawFlag())
             {
-                ClearBackground(WHITE);
                 DrawChip(myChip.GetPixels());
             }            
         EndDrawing();

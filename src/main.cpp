@@ -30,7 +30,7 @@ void DrawChip(u8 * pixels)
 
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-    SetTargetFPS(6);
+    SetTargetFPS(12);
 
     InitAudioDevice();
 

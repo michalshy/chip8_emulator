@@ -57,6 +57,11 @@ void Chip8::Init()
     {
         gfx[i] = 0;
     }
+    //CLEAR KESY
+    for(int i = 0; i < 16; i++)
+    {
+        key[i] = 0;
+    }
 
     drawFlag = true;
 }
@@ -64,7 +69,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/IBM.ch8", "rb");
+    file = fopen("../games/test_opcode.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -102,8 +107,8 @@ void Chip8::EmulateCycle()
             break;
     
         case 0x000E: // 0x00EE: Returns from subroutine          
-            --sp;
             pc = stack[sp];
+            --sp;
             pc += 2;
             break;
         default:
@@ -150,6 +155,10 @@ void Chip8::EmulateCycle()
     case 0x8000:
         switch (opcode & 0x000F)
         {
+        case 0x0000:
+            V[(opcode >> 8) & 0x0f] = V[(opcode >> 4) & 0x0f];
+            pc += 2;
+            break;
         case 0x0001:
             V[(opcode >> 8) & 0x0f] = (V[(opcode >> 8) & 0x0f] | V[(opcode >> 4) & 0x0f]);
             pc += 2;
@@ -301,27 +310,54 @@ void Chip8::EmulateCycle()
                 pc+=2;
                 break;
             case 0x000A:
-                pc+=2;
+                for(int i = 0; i < 16; i++)
+                {
+                    if(key[i] != 0)
+                    {
+                        pc+=2;
+                        V[(opcode & 0x0F00) >> 8] = key[i];
+                        break;
+                    }
+                }
                 break;
             case 0x0015:
+                delay_timer = V[(opcode & 0x0F00) >> 8];
                 pc+=2;
                 break;
             case 0x0018:
+                sound_timer = V[(opcode & 0x0F00) >> 8];
                 pc+=2;
                 break;
             case 0x001E:
+                I = I + V[(opcode & 0x0F00) >> 8];
+                if(I > 0x0FFF)
+                {
+                    V[0xF] = 1;
+                }
                 pc+=2;
                 break;
             case 0x0029:
+                I = memory[(V[(opcode & 0x0F00) >> 8] * 5)];
                 pc+=2;
                 break;
             case 0x0033:
+                memory[I] = V[(opcode & 0x0F00) >> 8]/100;
+                memory[I+1] = (V[(opcode & 0x0F00) >> 8]%100)/10;
+                memory[I+2] = V[(opcode & 0x0F00) >> 8]%10;
                 pc+=2;
                 break;
             case 0x0055:
+                for(int i = 0; i < ((opcode & 0x0F00) >> 8); i++)
+                {
+                    memory[I + i] = V[i];
+                }
                 pc+=2;
                 break;
             case 0x0065:
+            for(int i = 0; i < ((opcode & 0x0F00) >> 8); i++)
+                {
+                    V[i] = memory[I + i];
+                }
                 pc+=2;
                 break;
         default:

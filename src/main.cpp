@@ -1,5 +1,4 @@
 #include "Chip8/Chip8.hpp"
-#include "raylib.h"
 
 Chip8 myChip;
 
@@ -19,7 +18,7 @@ void DrawChip(u8 * pixels)
         {
             if(pixels[(i*CHIP8_SCREEN_WIDTH) + j] == 0)
             {
-                //DrawRectangle(j * 10, i * 10, 10, 10, WHITE);
+                DrawRectangle(j * 10, i * 10, 10, 10, WHITE);
             }
             else if(pixels[(i*CHIP8_SCREEN_WIDTH) + j] == 1)
             {
@@ -32,6 +31,8 @@ void DrawChip(u8 * pixels)
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
     SetTargetFPS(6);
+
+    InitAudioDevice();
 
     myChip.Init();
     myChip.LoadGame();

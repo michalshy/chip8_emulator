@@ -28,6 +28,15 @@ void Chip8::Init()
     //init time
     srand(time(NULL)); 
 
+    //load sound
+    vfx = LoadMusicStream("../resources/retro.mp3");
+    UpdateMusicStream(vfx);
+    PlayMusicStream(vfx);
+
+    //timers
+    sound_timer = 60;
+    delay_timer = 60;
+
     // Initialize registers and memory once
     pc      = 0x200;
     opcode  = 0;
@@ -324,13 +333,14 @@ void Chip8::EmulateCycle()
     {
         --delay_timer;
     }
-    if(sound_timer > 0)
+    if(sound_timer == 1)
     {
-        if(sound_timer == 1)
-        {
-            printf("BEEP!\n");
-        }
-        --sound_timer;
+        StopMusicStream(vfx);
+        sound_finished = true;
+    }
+    else if(sound_timer > 0 && !sound_finished)
+    {
+        sound_timer--;
     }
 }
 }

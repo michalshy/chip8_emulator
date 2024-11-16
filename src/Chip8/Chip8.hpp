@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include "raylib.h"
 #include "../Globals.hpp"
 
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
@@ -23,6 +24,8 @@ class Chip8{
     u16 sp;
     u8 key[16];
     bool drawFlag = false;
+    Music vfx;
+    bool sound_finished = false;
 public:
     explicit Chip8() = default;
     void Init();

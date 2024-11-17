@@ -67,7 +67,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/pong.ch8", "rb");
+    file = fopen("../games/test_opcode.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -104,7 +104,7 @@ void Chip8::EmulateCycle()
             pc += 2;
             break;
     
-        case 0x000E: // 0x00EE: Returns from subroutine          
+        case 0x000E: // 0x00EE: Returns from subroutine  
             --sp;
             pc = stack[sp];
             pc += 2;
@@ -197,7 +197,7 @@ void Chip8::EmulateCycle()
             pc += 2;
             break;
         case 0x0006:
-            V[0xF] = V[(opcode >> 8) & 0x0001];
+            V[0xF] = (V[(opcode >> 8) & 0x000F]  & 0b00000001);
             V[(opcode >> 8) & 0x000F] >>= 1;
             pc += 2;
             break;

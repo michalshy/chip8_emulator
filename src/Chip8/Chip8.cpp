@@ -30,8 +30,6 @@ void Chip8::Init()
 
     //load sound
     vfx = LoadMusicStream("../resources/retro.mp3");
-    UpdateMusicStream(vfx);
-    PlayMusicStream(vfx);
 
     //timers
     sound_timer = 60;
@@ -107,8 +105,8 @@ void Chip8::EmulateCycle()
             break;
     
         case 0x000E: // 0x00EE: Returns from subroutine          
-            pc = stack[sp];
             --sp;
+            pc = stack[sp];
             pc += 2;
             break;
         default:
@@ -119,19 +117,19 @@ void Chip8::EmulateCycle()
         pc = opcode & 0x0FFF;
         break;
     case 0x2000: //CALL SUBROUTING
-        ++sp;
         stack[sp] = pc;
+        ++sp;
         pc = opcode & 0x0FFF;
         break;
     case 0x3000: //Skip id Vv == kk
-        if(V[(opcode >> 8) & 0x0F] == (opcode & 0x00FF))
+        if(V[(opcode >> 8) & 0x000F] == (opcode & 0x00FF))
         {
             pc+=2;
         }
         pc += 2;
         break;
     case 0x4000:
-        if(V[(opcode >> 8) & 0x0f] != (opcode & 0x00FF))
+        if(V[(opcode >> 8) & 0x000F] != (opcode & 0x00FF))
         {
             pc+=2;
         }
@@ -199,15 +197,8 @@ void Chip8::EmulateCycle()
             pc += 2;
             break;
         case 0x0006:
-            if((V[(opcode >> 8) & 0x0f] & 0b00000001) == 1)
-            {
-                V[0xF] = 1;
-            }
-            else
-            {
-                V[0xF] = 0;
-            }
-            V[(opcode >> 8) & 0x0f] = V[(opcode >> 8) & 0x0f]/2;
+            V[0xF] = V[(opcode >> 8) & 0x0001];
+            V[(opcode >> 8) & 0x000F] >>= 1;
             pc += 2;
             break;
         case 0x0007:
@@ -361,6 +352,9 @@ void Chip8::EmulateCycle()
                 break;
         }
         break;
+    default:
+        printf ("Unknown opcode: 0x%X\n", opcode);
+        break;
     }
     // Update timers
     if(delay_timer > 0)
@@ -369,11 +363,17 @@ void Chip8::EmulateCycle()
     }
     if(sound_timer > 0)
     {
-        PlayMusicStream(vfx);
+        UpdateMusicStream(vfx);
+        if(enablePlay)
+        {
+            PlayMusicStream(vfx);
+            enablePlay = false;
+        }
+        sound_timer--;
     }
-    else
+    else if(sound_timer == 0)
     {
-        StopMusicStream(vfx);
+        enablePlay = true;
     }
 }
 

@@ -25,6 +25,7 @@ class Chip8{
     u8 key[16];
     bool drawFlag = false;
     Music vfx;
+    bool enablePlay = true;
 public:
     explicit Chip8() = default;
     void Init();

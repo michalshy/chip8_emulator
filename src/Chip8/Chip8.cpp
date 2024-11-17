@@ -67,7 +67,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/Cave.ch8", "rb");
+    file = fopen("../games/pong.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -187,10 +187,10 @@ void Chip8::EmulateCycle()
             }
             break;
         case 0x0005: // 0x8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't
-            if(V[(opcode >> 4) & 0X000F] > V[(opcode >> 8) & 0X000F]) 
-                V[0xF] = 0; // there is a borrow
+            if(V[(opcode >> 8) & 0X000F] >= V[(opcode >> 4) & 0X000F]) 
+                V[0xF] = 1; // there is a borrow
             else 
-                V[0xF] = 1;					
+                V[0xF] = 0;					
             V[(opcode >> 8) & 0X000F] -= V[(opcode >> 4) & 0X000F];
             pc += 2;
             break;
@@ -200,10 +200,10 @@ void Chip8::EmulateCycle()
             pc += 2;
             break;
         case 0x0007: // 0x8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
-            if(V[(opcode >> 8) & 0X000F] > V[(opcode >> 4) & 0X000F])	// VY-VX
-                V[0xF] = 0; // there is a borrow
+            if(V[(opcode >> 4) & 0X000F] >= V[(opcode >> 8) & 0X000F])	// VY-VX
+                V[0xF] = 1; // there is a borrow
             else
-                V[0xF] = 1;
+                V[0xF] = 0;
             V[(opcode >> 8) & 0X000F] = V[(opcode >> 4) & 0X000F] - V[(opcode >> 8) & 0X000F];				
             pc += 2;
             break;

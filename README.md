@@ -6,7 +6,7 @@ working towards functional application, currently:
  - graphic interface provided by raylib (❤️)    ✔️
 
 todo:
- - fix opcodes :/                               ✔️ (some issue in pong start)
+ - fix opcodes :/                               ✔️
  - better interface                             ❌
  - better code structure                        ❌
  - exe release                                  ❌

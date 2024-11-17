@@ -25,7 +25,6 @@ class Chip8{
     u8 key[16];
     bool drawFlag = false;
     Music vfx;
-    bool sound_finished = false;
 public:
     explicit Chip8() = default;
     void Init();
@@ -38,6 +37,7 @@ public:
         return gfx; 
     }
     u8 * GetKeys(){ return key; }
+    ~Chip8();
 };
 
 #endif /* __CHIP8_HPP */

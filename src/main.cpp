@@ -62,9 +62,6 @@ int main(int, char**){
     myChip.Init();
     myChip.LoadGame();
     
-    //First clear in control of raylib
-    ClearBackground(WHITE);
-    
     while(!WindowShouldClose())
     {
         CheckInput(myChip.GetKeys());
@@ -79,6 +76,9 @@ int main(int, char**){
         EndDrawing();
 
     }    
+
+    CloseAudioDevice();
+    CloseWindow();
     return 0;
 }
 

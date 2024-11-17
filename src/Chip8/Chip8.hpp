@@ -7,12 +7,18 @@
 #include "raylib.h"
 #include "../Globals.hpp"
 
+// Memory classification
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
 // 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
 // 0x200-0xFFF - Program ROM and work RAM
 
+
+//--------------------CLASS--------------------
+
+
 /**
- * 
+ * Class responsible for interpreting CHIP-8 applications
+ * Hide all internal functionality, exposes public function as an API for the system
  */
 
 class Chip8{
@@ -32,6 +38,12 @@ public:
     ~Chip8();
 private:
     //Private methods
+    //aggregators
+    void ZEROS();
+    void EIGHTS();
+    void ES();
+    void FS();
+    //single commands
     void CLS();
     void RET();
     void JMP();
@@ -39,7 +51,6 @@ private:
     void SE_BYTE();
     void SNE_BYTE();
     void SE_REG();
-    void SNE_REG();
     void LD_BYTE();
     void ADD_BYTE();
     void LD_REG();
@@ -67,6 +78,17 @@ private:
     void LD_RB();
     void LD_IREG();
     void LD_RIREG();
+
+    using chip_func = void (Chip8::*)();
+    static constexpr chip_func instructions[38] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
+    &Chip8::SNE_BYTE, &Chip8::SE_REG, &Chip8::LD_BYTE, &Chip8::ADD_BYTE, &Chip8::EIGHTS, 
+    &Chip8::SNE_REG, &Chip8::LD_IADDR, &Chip8::JMP_VADDR, &Chip8::RND, &Chip8::DRW, 
+    &Chip8::ES, &Chip8::FS, &Chip8::CLS, &Chip8::RET, &Chip8::LD_REG, &Chip8::OR, 
+    &Chip8::AND, &Chip8::XOR, &Chip8::ADD, &Chip8::SUB, &Chip8::SHR, 
+    &Chip8::SUBN, &Chip8::SHL, &Chip8::SKP, &Chip8::SKPN, &Chip8::LD_DT, &Chip8::LD_K, 
+    &Chip8::LD_RDT, &Chip8::LD_RST, &Chip8::ADD_I, &Chip8::LD_RF, &Chip8::LD_RB,
+    &Chip8::LD_IREG, &Chip8::LD_RIREG}; 
+
     //Private members
     u8 memory[4096];
     u16 opcode;
@@ -79,9 +101,11 @@ private:
     u16 stack[16];
     u16 sp;
     u8 key[16];
-    bool drawFlag = false;
+    bool drawFlag;
     Music vfx;
-    bool enablePlay = true;
+    bool enablePlay;
 };
+
+
 
 #endif /* __CHIP8_HPP */

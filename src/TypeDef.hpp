@@ -2,6 +2,7 @@
 #define __TYPE_DEF
 
 #include <cstdint>
+#include <map>
 
 /**
  * File agregates all typedefs present in project

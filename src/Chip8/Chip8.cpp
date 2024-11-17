@@ -396,7 +396,7 @@ void Chip8::EmulateCycleSecond()
         switch(opcode & 0x000F)
         {
         case 0x0000: CLS(); break;
-        case 0x000E: //RTS  
+        case 0x000E: //RET  
             --sp;
             pc = stack[sp];
             break;
@@ -413,34 +413,34 @@ void Chip8::EmulateCycleSecond()
         ++sp;
         pc = opcode & 0x0FFF;
         break;
-    case 0x3000: //SE 
+    case 0x3000: //SE_BYTE 
         if(V[(opcode >> 8) & 0x000F] == (opcode & 0x00FF))
         {
             pc+=2;
         }
         break;
-    case 0x4000: //SNE 
+    case 0x4000: //SNE_BYTE 
         if(V[(opcode >> 8) & 0x000F] != (opcode & 0x00FF))
         {
             pc+=2;
         }
         break;
-    case 0x5000: //SE 
+    case 0x5000: //SE_REG 
         if(V[(opcode >> 8) & 0x000F] == (V[(opcode >> 4) & 0x000F]))
         {
             pc+=2;
         }
         break;
-    case 0x6000: //LD 
+    case 0x6000: //LD_BYTE 
         V[(opcode >> 8) & 0x000F] = (opcode & 0x00FF);
         break;
-    case 0x7000: //ADD 
+    case 0x7000: //ADD_BYTE 
         V[(opcode >> 8) & 0x000F] += (opcode & 0x00FF);
         break;
     case 0x8000:
         switch (opcode & 0x000F)
         {
-        case 0x0000: //LD 
+        case 0x0000: //LD_REG 
             V[(opcode >> 8) & 0x000F] = V[(opcode >> 4) & 0x000F];
             break;
         case 0x0001: //OR 
@@ -493,16 +493,16 @@ void Chip8::EmulateCycleSecond()
             break;    
         }
         break;
-    case 0x9000: //SNE
+    case 0x9000: //SNE_REG
         if(V[(opcode >> 8) & 0x000F] != V[(opcode >> 4) & 0x000F])
         {
             pc += 2;
         }
         break;
-    case 0xA000: // LD 
+    case 0xA000: // LD_IADDR 
         I = opcode & 0x0FFF;
         break;
-    case 0xB000: //JP 
+    case 0xB000: //JMP_VADDR 
         pc -= 2;
         pc = (opcode & 0x0FFF) + V[0];
         break;
@@ -555,10 +555,10 @@ void Chip8::EmulateCycleSecond()
         {
             // EX9E: Skips the next instruction 
             // if the key stored in VX is pressed
-            case 0x0007: //LD 
+            case 0x0007: //LD_DT 
                 V[(opcode >> 8) & 0x000F] = delay_timer;
                 break;
-            case 0x000A: //LD 
+            case 0x000A: //LD_K 
                 for(int i = 0; i < 16; i++)
                 {
                     if(key[i] != 0)
@@ -569,13 +569,13 @@ void Chip8::EmulateCycleSecond()
                 }
                 pc-=2;
                 break;
-            case 0x0015: //LD 
+            case 0x0015: //LD_RDT 
                 delay_timer = V[(opcode >> 8) & 0x000F];
                 break;
-            case 0x0018: //LD 
+            case 0x0018: //LD_RST 
                 sound_timer = V[(opcode >> 8) & 0x000F];
                 break;
-            case 0x001E: //ADD 
+            case 0x001E: //ADD_I 
                 I = I + V[(opcode >> 8) & 0x000F];
                 if(I > 0x0FFF)
                 {
@@ -586,22 +586,22 @@ void Chip8::EmulateCycleSecond()
                     V[0XF] = 0;
                 }
                 break;
-            case 0x0029: //LD 
+            case 0x0029: //LD_RF 
                 I = V[(opcode >> 8) & 0x000F] * 5;
                 break;
-            case 0x0033: //LD 
+            case 0x0033: //LD_RB 
                 memory[I] = (V[(opcode >> 8) & 0x000F]/100);
                 memory[I+1] = ((V[(opcode >> 8) & 0x000F]/10)%10);
                 memory[I+2] = ((V[(opcode >> 8) & 0x000F]%100)%10);
                 break;
-            case 0x0055: //LD 
+            case 0x0055: //LD_IREG 
                 for(int i = 0; i <= ((opcode >> 8) & 0x000F); i++)
                 {
                     memory[I + i] = V[i];
                 }
                 I += ((opcode & 0x0F00) >> 8) + 1;
                 break;
-            case 0x0065: //LD 
+            case 0x0065: //LD_RIREG 
                 for(int i = 0; i <= ((opcode >> 8) & 0x000F); i++)
                 {
                     V[i] = memory[I + i];
@@ -651,4 +651,187 @@ void Chip8::CLS()
         gfx[i] = 0;
     }
     drawFlag = true;
+}
+
+void Chip8::RET()
+{
+    --sp;
+    pc = stack[sp];
+}
+
+void Chip8::JMP()
+{
+    pc = opcode & 0x0FFF;
+}
+
+void Chip8::CALL()
+{
+    stack[sp] = pc;
+    ++sp;
+    pc = opcode & 0x0FFF;
+}
+
+void Chip8::SE_BYTE()
+{
+    if(V[(opcode >> 8) & 0x000F] == (opcode & 0x00FF))
+    {
+        pc+=2;
+    }
+}
+
+void Chip8::SNE_BYTE()
+{
+    if(V[(opcode >> 8) & 0x000F] != (opcode & 0x00FF))
+    {
+        pc+=2;
+    }
+}
+
+void Chip8::SE_REG()
+{
+    if(V[(opcode >> 8) & 0x000F] == (V[(opcode >> 4) & 0x000F]))
+    {
+        pc+=2;
+    }
+}
+
+void Chip8::SNE_REG()
+{
+    
+}
+
+void Chip8::LD_BYTE()
+{
+    V[(opcode >> 8) & 0x000F] = (opcode & 0x00FF);
+}
+
+void Chip8::ADD_BYTE()
+{
+    V[(opcode >> 8) & 0x000F] += (opcode & 0x00FF);
+}
+
+void Chip8::LD_REG()
+{
+
+}
+
+void Chip8::OR()
+{
+    
+}
+
+void Chip8::AND()
+{
+    
+}
+
+void Chip8::XOR()
+{
+    
+}
+
+void Chip8::ADD()
+{
+    
+}
+
+void Chip8::SUB()
+{
+    
+}
+
+void Chip8::SHR()
+{
+    
+}
+
+void Chip8::SUBN()
+{
+    
+}
+
+void Chip8::SHL()
+{
+    
+}
+
+
+void Chip8::SNE_REG()
+{
+    
+}
+
+void Chip8::LD_IADDR()
+{
+    
+}
+
+void Chip8::JMP_VADDR()
+{
+    
+}
+
+void Chip8::RND()
+{
+    
+}
+
+void Chip8::DRW()
+{
+    
+}
+
+void Chip8::SKP()
+{
+    
+}
+
+void Chip8::SKPN()
+{
+    
+}
+
+void Chip8::LD_DT()
+{
+    
+}
+
+void Chip8::LD_K()
+{
+    
+}
+
+void Chip8::LD_RDT()
+{
+    
+}
+
+void Chip8::LD_RST()
+{
+    
+}
+
+void Chip8::ADD_I()
+{
+    
+}
+
+void Chip8::LD_RF()
+{
+    
+}
+
+void Chip8::LD_RB()
+{
+    
+}
+
+void Chip8::LD_IREG()
+{
+    
+}
+
+void Chip8::LD_RIREG()
+{
+    
 }

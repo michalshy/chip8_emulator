@@ -32,11 +32,7 @@ public:
     void EmulateCycle();
     void LoadGame();
     bool GetDrawFlag(){ return drawFlag; }
-    u8 * GetPixels()
-    { 
-        drawFlag = false;    
-        return gfx; 
-    }
+    u8 * GetPixels(){ return gfx; }
     u8 * GetKeys(){ return key; }
     ~Chip8();
 };

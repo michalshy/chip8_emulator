@@ -67,7 +67,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/test_opcode.ch8", "rb");
+    file = fopen("../games/Cave.ch8", "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
@@ -86,6 +86,8 @@ void Chip8::LoadGame()
 }
 void Chip8::EmulateCycle()
 {
+    drawFlag = false;
+
     // Fetch Opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
 
@@ -180,37 +182,29 @@ void Chip8::EmulateCycle()
                 {
                     V[0xF] = 0;
                 }
-                V[(opcode >> 8) & 0x000F] = (r & 0x0000FFFF);
+                V[(opcode >> 8) & 0x000F] = r;
                 pc += 2;
             }
             break;
-        case 0x0005:
-            if(V[(opcode >> 8) & 0x000F] > V[(opcode >> 4) & 0x000F])
-            {
-                V[0xF] = 1;
-            }
-            else
-            {
-                V[0xF] = 0;
-            }
-            V[(opcode >> 8) & 0x000F] = V[(opcode >> 8) & 0x000F] - V[(opcode >> 4) & 0x000F];
+        case 0x0005: // 0x8XY5: VY is subtracted from VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+            if(V[(opcode >> 4) & 0X000F] > V[(opcode >> 8) & 0X000F]) 
+                V[0xF] = 0; // there is a borrow
+            else 
+                V[0xF] = 1;					
+            V[(opcode >> 8) & 0X000F] -= V[(opcode >> 4) & 0X000F];
             pc += 2;
             break;
         case 0x0006:
-            V[0xF] = (V[(opcode >> 8) & 0x000F]  & 0b00000001);
+            V[0xF] = (V[(opcode >> 8) & 0x000F]  & 0x1);
             V[(opcode >> 8) & 0x000F] >>= 1;
             pc += 2;
             break;
-        case 0x0007:
-            if(V[(opcode >> 4) & 0x000F] > V[(opcode >> 8) & 0x000F])
-            {
-                V[0xF] = 1;
-            }
+        case 0x0007: // 0x8XY7: Sets VX to VY minus VX. VF is set to 0 when there's a borrow, and 1 when there isn't
+            if(V[(opcode >> 8) & 0X000F] > V[(opcode >> 4) & 0X000F])	// VY-VX
+                V[0xF] = 0; // there is a borrow
             else
-            {
-                V[0xF] = 0;
-            }
-            V[(opcode >> 8) & 0x000F] = V[(opcode >> 4) & 0x000F] - V[(opcode >> 8) & 0x000F];
+                V[0xF] = 1;
+            V[(opcode >> 8) & 0X000F] = V[(opcode >> 4) & 0X000F] - V[(opcode >> 8) & 0X000F];				
             pc += 2;
             break;
         case 0x000E:
@@ -224,7 +218,7 @@ void Chip8::EmulateCycle()
         }
         break;
     case 0x9000:
-        if(V[(opcode >> 8) & 0x0f] != V[(opcode >> 4) & 0x0f])
+        if(V[(opcode >> 8) & 0x000F] != V[(opcode >> 4) & 0x000F])
         {
             pc += 2;
         }
@@ -239,7 +233,7 @@ void Chip8::EmulateCycle()
         pc = (opcode & 0x0FFF) + V[0];
         break;
     case 0xC000:
-        V[(opcode >> 8) & 0x0f] = (rand() & V[(opcode >> 4) & 0x0f]);
+        V[(opcode >> 8) & 0x000F] = ((rand() % 0xFF) & (opcode & 0x00FF));
         pc += 2;
         break;
     case 0xD000:		   
@@ -258,7 +252,7 @@ void Chip8::EmulateCycle()
             if((pixel & (0x80 >> sizeSide)) != 0)
             {
                 if(gfx[(x + sizeSide + ((y + sizeUp) * 64))] == 1)
-                V[0xF] = 1;                                 
+                    V[0xF] = 1;                                 
                 gfx[x + sizeSide + ((y + sizeUp) * 64)] ^= 1;
             }
             }
@@ -303,8 +297,8 @@ void Chip8::EmulateCycle()
                     if(key[i] != 0)
                     {
                         pc+=2;
-                        V[(opcode >> 8) & 0x000F] = key[i];
-                        break;
+                        V[(opcode >> 8) & 0x000F] = i;
+                        return;
                     }
                 }
                 break;
@@ -321,6 +315,10 @@ void Chip8::EmulateCycle()
                 if(I > 0x0FFF)
                 {
                     V[0xF] = 1;
+                }
+                else
+                {
+                    V[0XF] = 0;
                 }
                 pc+=2;
                 break;
@@ -339,6 +337,8 @@ void Chip8::EmulateCycle()
                 {
                     memory[I + i] = V[i];
                 }
+                // On the original interpreter, when the operation is done, I = I + X + 1.
+                I += ((opcode & 0x0F00) >> 8) + 1;
                 pc+=2;
                 break;
             case 0x0065:
@@ -346,6 +346,8 @@ void Chip8::EmulateCycle()
                 {
                     V[i] = memory[I + i];
                 }
+                // On the original interpreter, when the operation is done, I = I + X + 1.
+                I += ((opcode & 0x0F00) >> 8) + 1;
                 pc+=2;
                 break;
             default:

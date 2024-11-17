@@ -11,9 +11,37 @@
 // 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
 // 0x200-0xFFF - Program ROM and work RAM
 
+/**
+ * 
+ */
+
 class Chip8{
-    u16 opcode;
+public:
+    //Public Constructor
+    explicit Chip8() = default;
+    //Public setup methods
+    void Init();
+    void LoadGame();
+    void EmulateCycle();
+    void EmulateCycleSecond();
+    //Public getters
+    bool GetDrawFlag(){ return drawFlag; }
+    u8 * GetPixels(){ return gfx; }
+    u8 * GetKeys(){ return key; }
+    //Public destructor
+    ~Chip8();
+private:
+    //Private methods
+    void CLS();
+    void RET();
+    void JP();
+    void CALL();
+    void SE();
+    void SNE();
+    void LD();
+    //Private members
     u8 memory[4096];
+    u16 opcode;
     u8 V[16];
     u16 I;
     u16 pc;
@@ -26,15 +54,6 @@ class Chip8{
     bool drawFlag = false;
     Music vfx;
     bool enablePlay = true;
-public:
-    explicit Chip8() = default;
-    void Init();
-    void EmulateCycle();
-    void LoadGame();
-    bool GetDrawFlag(){ return drawFlag; }
-    u8 * GetPixels(){ return gfx; }
-    u8 * GetKeys(){ return key; }
-    ~Chip8();
 };
 
 #endif /* __CHIP8_HPP */

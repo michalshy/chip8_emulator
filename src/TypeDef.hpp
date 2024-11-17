@@ -3,6 +3,11 @@
 
 #include <cstdint>
 
+/**
+ * File agregates all typedefs present in project
+ */
+
+//due to repetitive declaration of types, short ones are provided
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;

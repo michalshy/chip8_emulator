@@ -2,14 +2,6 @@
 
 Chip8 myChip;
 
-void SetKeys(u8 * keys)
-{
-    for(u8 i = 0; i < 16; i++)
-    {
-        //TODO: Keys handling
-    }
-}
-
 void DrawChip(u8 * pixels)
 {
     for (int i = 0; i < CHIP8_SCREEN_HEIGHT; i++)
@@ -55,7 +47,7 @@ void CheckInput(u8 * key)
 
 int main(int, char**){
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
-    SetTargetFPS(240);
+    SetTargetFPS(960);
 
     InitAudioDevice();
 
@@ -66,7 +58,7 @@ int main(int, char**){
     {
         CheckInput(myChip.GetKeys());
 
-        myChip.EmulateCycle();
+        myChip.EmulateCycleSecond();
         //rest drawing left for handle of CHIP-8
         BeginDrawing();
             if(myChip.GetDrawFlag())

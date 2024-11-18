@@ -7,11 +7,10 @@
 #include "raylib.h"
 #include "../Globals.hpp"
 
-// Memory classification
+// Memory classification of CHIP-8
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
 // 0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
 // 0x200-0xFFF - Program ROM and work RAM
-
 
 //--------------------CLASS--------------------
 
@@ -23,89 +22,92 @@
 
 class Chip8{
 public:
-    //Public Constructor
+    /* Public constructor */
     explicit Chip8() = default;
-    //Public setup methods
+    /* Public setup methods */
     void Init();
     void LoadGame();
     void EmulateCycle();
     void EmulateCycleSecond();
-    //Public getters
+    /* Public getters */
     bool GetDrawFlag(){ return drawFlag; }
     u8 * GetPixels(){ return gfx; }
     u8 * GetKeys(){ return key; }
-    //Public destructor
+    /* Public destructor */
     ~Chip8();
 private:
-    //Private methods
-    void ExecuteCode();
+    /* Private methods */
+    void ExecuteCode();            ///< Executes main opcodes
 
-    //aggregators
-    void ZEROS();
-    void EIGHTS();
-    void ES();
-    void FS();
-    //single commands
-    void CLS();
-    void RET();
-    void JMP();
-    void CALL();
-    void SE_BYTE();
-    void SNE_BYTE();
-    void SE_REG();
-    void LD_BYTE();
-    void ADD_BYTE();
-    void LD_REG();
-    void OR();
-    void AND();
-    void XOR();
-    void ADD();
-    void SUB();
-    void SHR();
-    void SUBN();
-    void SHL();
-    void SNE_REG();
-    void LD_IADDR();
-    void JMP_VADDR();
-    void RND();
-    void DRW();
-    void SKP();
-    void SKPN();
-    void LD_DT();
-    void LD_K();
-    void LD_RDT();
-    void LD_RST();
-    void ADD_I();
-    void LD_RF();
-    void LD_RB();
-    void LD_IREG();
-    void LD_RIREG();
+    /* Aggregators */
+    void ZEROS();                  ///< Regulates execution of commands with 0x0 prefix
+    void EIGHTS();                 ///< Regulates execution of commands with 0x8 prefix
+    void ES();                     ///< Regulates execution of commands with 0xE prefix
+    void FS();                     ///< Regulates execution of commands with 0xF prefix
+    /* Single commands */
+    void CLS();                    ///< 00E0
+    void JMP();                    ///< 1nnn
+    void RET();                    ///< 00EE
+    void CALL();                   ///< 2nnn 
+    void SE_BYTE();                ///< 3xkk 
+    void SNE_BYTE();               ///< 4xkk 
+    void SE_REG();                 ///< 5xy0 
+    void LD_BYTE();                ///< 6xkk  
+    void ADD_BYTE();               ///< 7xkk  
+    void LD_REG();                 ///< 8xy0  
+    void OR();                     ///< 8xy1  
+    void AND();                    ///< 8xy2  
+    void XOR();                    ///< 8xy3  
+    void ADD();                    ///< 8xy4  
+    void SUB();                    ///< 8xy5  
+    void SHR();                    ///< 8xy6  
+    void SUBN();                   ///< 8xy7  
+    void SHL();                    ///< 8xyE  
+    void SNE_REG();                ///< 9xy0  
+    void LD_IADDR();               ///< Annn  
+    void JMP_VADDR();              ///< Bnnn 
+    void RND();                    ///< Cxkk 
+    void DRW();                    ///< Dxyn 
+    void SKP();                    ///< Ex9E 
+    void SKPN();                   ///< ExA1 
+    void LD_DT();                  ///< Fx07 
+    void LD_K();                   ///< Fx0A 
+    void LD_RDT();                 ///< Fx15 
+    void LD_RST();                 ///< Fx18 
+    void ADD_I();                  ///< Fx1E 
+    void LD_RF();                  ///< Fx29 
+    void LD_RB();                  ///< Fx33 
+    void LD_IREG();                ///< Fx55 
+    void LD_RIREG();               ///< Fx65 
 
-    using chip_func = void (Chip8::*)();
-    const chip_func instructions[38] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
+    /* Array with functions where index is mapped to mainOpcodes map */
+    using chip_func = void (Chip8::*)(); 
+    const chip_func instructions[16] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
     &Chip8::SNE_BYTE, &Chip8::SE_REG, &Chip8::LD_BYTE, &Chip8::ADD_BYTE, &Chip8::EIGHTS, 
     &Chip8::SNE_REG, &Chip8::LD_IADDR, &Chip8::JMP_VADDR, &Chip8::RND, &Chip8::DRW, 
-    &Chip8::ES, &Chip8::FS, &Chip8::CLS, &Chip8::RET, &Chip8::LD_REG, &Chip8::OR, 
-    &Chip8::AND, &Chip8::XOR, &Chip8::ADD, &Chip8::SUB, &Chip8::SHR, 
-    &Chip8::SUBN, &Chip8::SHL, &Chip8::SKP, &Chip8::SKPN, &Chip8::LD_DT, &Chip8::LD_K, 
-    &Chip8::LD_RDT, &Chip8::LD_RST, &Chip8::ADD_I, &Chip8::LD_RF, &Chip8::LD_RB,
-    &Chip8::LD_IREG, &Chip8::LD_RIREG}; 
+    &Chip8::ES, &Chip8::FS}; 
 
-    //Private members
-    u8 memory[4096];
-    u16 opcode;
-    u8 V[16];
-    u16 I;
-    u16 pc;
-    u8 gfx[64 * 32];
-    u8 delay_timer;
-    u8 sound_timer;
-    u16 stack[16];
-    u16 sp;
-    u8 key[16];
-    bool drawFlag;
-    Music vfx;
-    bool enablePlay;
+    /* Private members */
+    u8 memory[4096];                ///< Memory of the system 
+    u16 opcode;                     ///< Current opcode
+    u8 V[16];                       ///< V register
+    u16 I;                          ///< I pointer
+    u16 pc;                         ///< Program counter
+    u8 gfx[64 * 32];                ///< Matrix of graphical interface
+    u8 delay_timer;                 ///< Delay timer
+    u8 sound_timer;                 ///< Sound timer
+    u16 stack[16];                  ///< 16 bytes stack
+    u16 sp;                         ///< Current position on stack
+    
+    u8 key[16];                     ///< Array provided for key mapping
+                                    // Expected keys by system:
+                                    // 1    2	3	C
+                                    // 4	5	6	D
+                                    // 7	8	9	E
+                                    // A	0	B	F
+    bool drawFlag;                  ///< Flag for optimization of drawing
+    Music vfx;                      ///< Music player while sound_timer>0
+    bool enablePlay;                ///< Switch for music while sound_timer>0
 };
 
 

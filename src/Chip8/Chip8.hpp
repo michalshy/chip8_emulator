@@ -28,7 +28,6 @@ public:
     void Init();
     void LoadGame();
     void EmulateCycle();
-    void EmulateCycleSecond();
     /* Public getters */
     bool GetDrawFlag(){ return drawFlag; }
     u8 * GetPixels(){ return gfx; }

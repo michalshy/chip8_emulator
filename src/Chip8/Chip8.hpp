@@ -38,6 +38,8 @@ public:
     ~Chip8();
 private:
     //Private methods
+    void ExecuteCode();
+
     //aggregators
     void ZEROS();
     void EIGHTS();
@@ -80,7 +82,7 @@ private:
     void LD_RIREG();
 
     using chip_func = void (Chip8::*)();
-    static constexpr chip_func instructions[38] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
+    const chip_func instructions[38] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
     &Chip8::SNE_BYTE, &Chip8::SE_REG, &Chip8::LD_BYTE, &Chip8::ADD_BYTE, &Chip8::EIGHTS, 
     &Chip8::SNE_REG, &Chip8::LD_IADDR, &Chip8::JMP_VADDR, &Chip8::RND, &Chip8::DRW, 
     &Chip8::ES, &Chip8::FS, &Chip8::CLS, &Chip8::RET, &Chip8::LD_REG, &Chip8::OR, 

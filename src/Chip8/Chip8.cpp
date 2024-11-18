@@ -373,9 +373,13 @@ void Chip8::EmulateCycleSecond()
 
     // Fetch Opcode
     opcode = memory[pc] << 8 | memory[pc + 1];
+    printf("%x",opcode);
     pc += 2;
 
-    instructions[mainOpCodes[opcode & 0xF000]];
+    chip_func v = instructions[mainOpCodes[opcode & 0xF000]];
+    (this->*v)();
+
+//    instructions[mainOpCodes[opcode & 0xF000]]();
     
     // Update timers
     if(delay_timer > 0)
@@ -407,22 +411,26 @@ Chip8::~Chip8()
 
 void Chip8::ZEROS()
 {
-    instructions[zeros[opcode & 0x000F]]; 
+    chip_func z = instructions[zeros[opcode & 0x000F]];
+    (this->*z)();
 }
 
 void Chip8::EIGHTS()
 {
-    instructions[eights[opcode & 0x000F]]; 
+    chip_func e = instructions[eights[opcode & 0x000F]];
+    (this->*e)();
 }
 
 void Chip8::ES()
 {
-    instructions[es[opcode & 0x00FF]]; 
+    chip_func ee = instructions[es[opcode & 0x00FF]];
+    (this->*ee)();
 }
 
 void Chip8::FS()
 {
-    instructions[fs[opcode & 0x00FF]]; 
+    chip_func f = instructions[fs[opcode & 0x00FF]];
+    (this->*f)();
 }
 
 void Chip8::CLS()

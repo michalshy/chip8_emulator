@@ -58,7 +58,7 @@ int main(int, char**){
     {
         CheckInput(myChip.GetKeys());
 
-        myChip.EmulateCycle();
+        myChip.EmulateCycleSecond();
         //rest drawing left for handle of CHIP-8
         BeginDrawing();
             if(myChip.GetDrawFlag())

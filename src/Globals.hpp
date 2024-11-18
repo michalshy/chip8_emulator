@@ -12,18 +12,19 @@
 constexpr u8 CHIP8_SCREEN_WIDTH = 64;
 constexpr u8 CHIP8_SCREEN_HEIGHT = 32;
 
-static std::map<int, int> mainOpCodes = { {0,0x0000}, {1,0x1000}, {2,0x2000},
-{3,0x3000}, {4,0x4000}, {5,0x5000}, {6,0x6000}, {7,0x7000}, {8,0x8000}, {9,0x9000},
-{10,0xA000}, {11,0xB000}, {12,0xC000}, {13,0xD000}, {14,0xE000}, {15,0xF000}};
+static std::map<u16, u8> mainOpCodes = { {0x0000, 0}, {0x1000, 1}, {0x2000, 2},
+{0x3000, 3}, {0x4000, 4}, {0x5000, 5}, {0x6000, 6}, {0x7000, 7}, {0x8000, 8}, 
+{0x9000, 9}, {0xA000, 10}, {0xB000, 11}, {0xC000, 12}, {0xD000, 13}, {0xE000, 14},
+{0xF000, 15}};
 
-static std::map<int, int> zeros = { {16,0x0000}, {17,0x000E} };
+static std::map<u16, u8> zeros = { {16,0x0000}, {17,0x000E} };
 
-static std::map<int, int> eights = {  {18,0x0000}, {19,0x0001}, {20,0x0002},
+static std::map<u16, u8> eights = {  {18,0x0000}, {19,0x0001}, {20,0x0002},
 {21,0x0003}, {22,0x0004}, {23,0x0005}, {24,0x0006}, {25,0x0007}, {26,0x000E} };
 
-static std::map<int, int> es = { {27,0x009E}, {28,0x00A1} };
+static std::map<u16, u8> es = { {27,0x009E}, {28,0x00A1} };
 
-static std::map<int, int> fs = { {29,0x0007}, {30,0x000A}, {31,0x0015},
+static std::map<u16, u8> fs = { {29,0x0007}, {30,0x000A}, {31,0x0015},
 {32,0x0018}, {33,0x001E}, {34,0x0029}, {35,0x0033}, {36,0x0055}, {37,0x0065} };
 
 constexpr u8 CHIP8_FONTSET[80] =

@@ -2,6 +2,7 @@
 #define __TYPE_DEF
 
 #include <cstdint>
+#include <unordered_map>
 #include <map>
 
 /**

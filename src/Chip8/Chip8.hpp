@@ -4,11 +4,9 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
-#include <cstdio>
 #include <time.h>
 #include <stdlib.h>
 #include "../Globals.hpp"
-#include "Audio/AudioManager.hpp"
 
 // Memory classification of CHIP-8
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
@@ -33,6 +31,7 @@ public:
     void EmulateCycle();
     /* Public getters */
     bool GetDrawFlag(){ return drawFlag; }
+    bool GetSoundTimer(){ return sound_timer; }
     u8 * GetPixels(){ return gfx; }
     u8 * GetKeys(){ return key; }
 private:
@@ -111,8 +110,6 @@ private:
                                     // A	0	B	F
     bool drawFlag;                  ///< Flag for optimization of drawing
     bool enablePlay;                ///< Switch for music while sound_timer>0
-
-    AudioManager audio;
 };
 
 

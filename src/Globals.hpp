@@ -62,6 +62,9 @@ constexpr u8 KEYS_LAYOUT[16] =
 'z','x','c','v'};
 
 constexpr char const* TITLE = "CHIP8_INTERPRETER";
+
+constexpr char const* MUSIC_PATH = "../../resources/retro.wav";
+
 #pragma endregion
 
 #endif //__GLOBALS

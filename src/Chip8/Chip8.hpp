@@ -4,8 +4,11 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
-#include "raylib.h"
+#include <cstdio>
+#include <time.h>
+#include <stdlib.h>
 #include "../Globals.hpp"
+#include "Audio/AudioManager.hpp"
 
 // Memory classification of CHIP-8
 // 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
@@ -32,8 +35,6 @@ public:
     bool GetDrawFlag(){ return drawFlag; }
     u8 * GetPixels(){ return gfx; }
     u8 * GetKeys(){ return key; }
-    /* Public destructor */
-    ~Chip8();
 private:
     /* Private methods */
     void ExecuteCode();            ///< Executes main opcodes
@@ -109,8 +110,9 @@ private:
                                     // 7	8	9	E
                                     // A	0	B	F
     bool drawFlag;                  ///< Flag for optimization of drawing
-    Music vfx;                      ///< Music player while sound_timer>0
     bool enablePlay;                ///< Switch for music while sound_timer>0
+
+    AudioManager audio;
 };
 
 

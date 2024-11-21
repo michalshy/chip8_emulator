@@ -1,52 +1,50 @@
 #include "Chip8.hpp"
-#include <cstdio>
-#include <time.h>
-#include <stdlib.h>
+
 
 //--------------------PUBLIC METHODS--------------------
 
 void Chip8::Init()
 {
-    //initialize time
+    /// Initialize time
     srand(time(NULL)); 
 
-    //initialize bools
+    /// Initialize bools
     enablePlay = true;
 
-    //load sound
-    vfx = LoadMusicStream("../resources/retro.wav");
-
-    //initialize timers
+    /// Initialize AudioManager
+    audio = AudioManager(MUSIC_PATH);
+    
+    /// Initialize timers
     sound_timer = 60;
     delay_timer = 60;
 
-    // initialize registers and memory once
+    /// Initialize registers and memory once
     pc      = 0x200;
     opcode  = 0;
     I       = 0;
     sp      = 0;
-    //clear memory
+    /// Clear memory
     for(int i = 0; i < 4096; i++)
     {
         memory[i] = 0;
     }
-    //load fontset into memory
+    /// Load fontset into memory
     for(int i = 0; i < 80; i++)
     {
         memory[i] = CHIP8_FONTSET[i];
     }
-    //clear display
+    /// Clear display
     for(int i = 0; i < (CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_WIDTH); i++)
     {
         gfx[i] = 0;
     }
-    //clear keys
+    /// Clear keys
     for(int i = 0; i < 16; i++)
     {
         key[i] = 0;
     }
 
-    //clear once
+    /// Clear once
     drawFlag = true;
 }
 
@@ -100,11 +98,6 @@ void Chip8::EmulateCycle()
     {
         enablePlay = true;
     }
-}
-
-Chip8::~Chip8()
-{
-    UnloadMusicStream(vfx);
 }
 
 //--------------------PRIVATE METHODS--------------------

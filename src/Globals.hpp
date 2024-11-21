@@ -12,10 +12,19 @@
 constexpr u8 CHIP8_SCREEN_WIDTH = 64;
 constexpr u8 CHIP8_SCREEN_HEIGHT = 32;
 
-static std::map<u16, u8> mainOpCodes = { {0x0000, 0}, {0x1000, 1}, {0x2000, 2},
+/// @brief Section containg opcodes mapped to instructions array
+/// Check Chip8.hpp private functions
+static std::map<u16, u8> mappedMainOpcodes = { {0x0000, 0}, {0x1000, 1}, {0x2000, 2},
 {0x3000, 3}, {0x4000, 4}, {0x5000, 5}, {0x6000, 6}, {0x7000, 7}, {0x8000, 8}, 
 {0x9000, 9}, {0xA000, 10}, {0xB000, 11}, {0xC000, 12}, {0xD000, 13}, {0xE000, 14},
 {0xF000, 15}};
+static std::map<u16, u8> mappedZeroOpcodes = { {0x0000, 16}, {0x000E, 17} };
+static std::map<u16, u8> mappedEightOpcodes = { {0x0000, 18}, {0x0001, 19}, {0x0002, 20},
+{0x0003, 21}, {0x0004, 22}, {0x0005, 23}, {0x0006, 24}, {0x0007, 25}, {0x000E, 26} };
+static std::map<u16, u8> mappedEsOpcodes = { {0x009E, 27}, {0x00A1, 28} };
+static std::map<u16, u8> mappedFsOpcodes = { {0x0007, 29}, {0x000A, 30}, {0x0015, 31},
+{0x0018, 32}, {0x001E, 33}, {0x0029, 34}, {0x0033, 35}, {0x0055, 36}, {0x0065, 37} };
+/// End of section
 
 constexpr u8 CHIP8_FONTSET[80] =
 { 

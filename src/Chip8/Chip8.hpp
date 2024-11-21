@@ -68,7 +68,7 @@ private:
     void RND();                    ///< Cxkk 
     void DRW();                    ///< Dxyn 
     void SKP();                    ///< Ex9E 
-    void SKPN();                   ///< ExA1 
+    void SKNP();                   ///< ExA1 
     void LD_DT();                  ///< Fx07 
     void LD_K();                   ///< Fx0A 
     void LD_RDT();                 ///< Fx15 
@@ -81,10 +81,14 @@ private:
 
     /* Array with functions where index is mapped to mainOpcodes map */
     using chip_func = void (Chip8::*)(); 
-    const chip_func instructions[16] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
+    const chip_func instructions[38] = {&Chip8::ZEROS, &Chip8::JMP, &Chip8::CALL, &Chip8::SE_BYTE,
     &Chip8::SNE_BYTE, &Chip8::SE_REG, &Chip8::LD_BYTE, &Chip8::ADD_BYTE, &Chip8::EIGHTS, 
     &Chip8::SNE_REG, &Chip8::LD_IADDR, &Chip8::JMP_VADDR, &Chip8::RND, &Chip8::DRW, 
-    &Chip8::ES, &Chip8::FS}; 
+    &Chip8::ES, &Chip8::FS, &Chip8::CLS, &Chip8::RET, &Chip8::LD_REG, &Chip8::OR, 
+    &Chip8::AND, &Chip8::XOR, &Chip8::ADD, &Chip8::SUB, &Chip8::SHR, &Chip8::SUBN, 
+    &Chip8::SHL, &Chip8::SKP, &Chip8::SKNP, &Chip8::LD_DT, &Chip8::LD_K,
+    &Chip8::LD_RDT, &Chip8::LD_RST, &Chip8::ADD_I, &Chip8::LD_RF, &Chip8::LD_RB, 
+    &Chip8::LD_IREG, &Chip8::LD_RIREG }; 
 
     /* Private members */
     u8 memory[4096];                ///< Memory of the system 

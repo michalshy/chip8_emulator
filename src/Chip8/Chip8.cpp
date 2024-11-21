@@ -79,9 +79,8 @@ void Chip8::EmulateCycle()
     opcode = memory[pc] << 8 | memory[pc + 1];
     pc += 2;
 
-    chip_func v = instructions[mainOpCodes[opcode & 0xF000]];
-    (this->*v)();
-    
+    (this->*instructions[mappedMainOpcodes[opcode & 0xF000]])();
+
     // Update timers
     if(delay_timer > 0)
     {
@@ -110,60 +109,27 @@ Chip8::~Chip8()
 
 //--------------------PRIVATE METHODS--------------------
 
+/// @brief Section containing functions for aggregating other functions
+/// Check Map section in Globals.hpp
 void Chip8::ZEROS()
 {
-    switch (opcode & 0x000F)
-    {
-    case 0x0000: CLS(); break;
-    case 0x000E: RET(); break;
-    default: break;
-    }
+    (this->*instructions[mappedZeroOpcodes[opcode & 0x000F]])();
 }
-
 void Chip8::EIGHTS()
 {
-    switch (opcode & 0x000F)
-    {
-    case 0x0000: LD_REG(); break;
-    case 0x0001: OR(); break;
-    case 0x0002: AND(); break;
-    case 0x0003: XOR(); break;
-    case 0x0004: ADD(); break;
-    case 0x0005: SUB(); break;
-    case 0x0006: SHR(); break;
-    case 0x0007: SUBN(); break;
-    case 0x000E: SHL(); break;
-    default: break;
-    }
+    (this->*instructions[mappedEightOpcodes[opcode & 0x000F]])();
 }
-
 void Chip8::ES()
 {
-    switch (opcode & 0x00FF)
-    {
-    case 0x009E: SKP(); break;
-    case 0x00A1: SKPN(); break;
-    default: break;
-    }
+    (this->*instructions[mappedEsOpcodes[opcode & 0x00FF]])();
 }
-
 void Chip8::FS()
 {
-    switch (opcode & 0x00FF)
-    {
-    case 0x0007: LD_DT(); break;
-    case 0x000A: LD_K(); break;
-    case 0x0015: LD_RDT(); break;
-    case 0x0018: LD_RST(); break;
-    case 0x001E: ADD_I(); break;
-    case 0x0029: LD_RF(); break;
-    case 0x0033: LD_RB(); break;
-    case 0x0055: LD_IREG(); break;
-    case 0x0065: LD_RIREG(); break;
-    default: break;
-    }
+    (this->*instructions[mappedFsOpcodes[opcode & 0x00FF]])();
 }
+///End of section
 
+/// @brief 00E0 opcode
 void Chip8::CLS()
 {
     printf("execute %x \n", opcode);
@@ -173,20 +139,20 @@ void Chip8::CLS()
     }
     drawFlag = true;
 }
-
+/// @brief 00EE opcode
 void Chip8::RET()
 {
     printf("execute %x \n", opcode);
     --sp;
     pc = stack[sp];
 }
-
+/// @brief 1nnn opcode
 void Chip8::JMP()
 {
     printf("execute %x \n", opcode);
     pc = opcode & 0x0FFF;
 }
-
+/// @brief 2nnn opcode
 void Chip8::CALL()
 {
     printf("execute %x \n", opcode);
@@ -194,7 +160,7 @@ void Chip8::CALL()
     ++sp;
     pc = opcode & 0x0FFF;
 }
-
+/// @brief 3xkk opcode
 void Chip8::SE_BYTE()
 {
     printf("execute %x \n", opcode);
@@ -203,7 +169,7 @@ void Chip8::SE_BYTE()
         pc+=2;
     }
 }
-
+/// @brief 4xkk opcode
 void Chip8::SNE_BYTE()
 {
     printf("execute %x \n", opcode);
@@ -212,7 +178,7 @@ void Chip8::SNE_BYTE()
         pc+=2;
     }
 }
-
+/// @brief 5xy0 opcode
 void Chip8::SE_REG()
 {
     printf("execute %x \n", opcode);
@@ -221,43 +187,43 @@ void Chip8::SE_REG()
         pc+=2;
     }
 }
-
+/// @brief 6xkk opcode
 void Chip8::LD_BYTE()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = (opcode & 0x00FF);
 }
-
+/// @brief 7xkk opcode
 void Chip8::ADD_BYTE()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] += (opcode & 0x00FF);
 }
-
+/// @brief 8xy0 opcode
 void Chip8::LD_REG()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = V[(opcode >> 4) & 0x000F];
 }
-
+/// @brief 8xy1 opcode
 void Chip8::OR()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = (V[(opcode >> 8) & 0x000F] | V[(opcode >> 4) & 0x000F]);
 }
-
+/// @brief 8xy2 opcode
 void Chip8::AND()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = (V[(opcode >> 8) & 0x000F] & V[(opcode >> 4) & 0x000F]);
 }
-
+/// @brief 8xy3 opcode
 void Chip8::XOR()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = (V[(opcode >> 8) & 0x000F] ^ V[(opcode >> 4) & 0x000F]);
 }
-
+/// @brief 8xy4 opcode
 void Chip8::ADD()
 {
     printf("execute %x \n", opcode);
@@ -272,7 +238,7 @@ void Chip8::ADD()
     }
     V[(opcode >> 8) & 0x000F] = r;
 }
-
+/// @brief 8xy5 opcode
 void Chip8::SUB()
 {
     printf("execute %x \n", opcode);
@@ -282,14 +248,14 @@ void Chip8::SUB()
         V[0xF] = 0;					
     V[(opcode >> 8) & 0X000F] -= V[(opcode >> 4) & 0X000F];
 }
-
+/// @brief 8xy6 opcode
 void Chip8::SHR()
 {
     printf("execute %x \n", opcode);
     V[0xF] = (V[(opcode >> 8) & 0x000F]  & 0x1);
     V[(opcode >> 8) & 0x000F] >>= 1;
 }
-
+/// @brief 8xy7 opcode
 void Chip8::SUBN()
 {
     printf("execute %x \n", opcode);
@@ -299,40 +265,40 @@ void Chip8::SUBN()
         V[0xF] = 0;
     V[(opcode >> 8) & 0X000F] = V[(opcode >> 4) & 0X000F] - V[(opcode >> 8) & 0X000F];			
 }
-
+/// @brief 8xyE opcode
 void Chip8::SHL()
 {
     printf("execute %x \n", opcode);
     V[0xF] = V[(opcode >> 8) & 0x000F] >> 7;
     V[(opcode >> 8) & 0x000F] <<= 1;
 }
-
+/// @brief 9xy0 opcode
 void Chip8::SNE_REG()
 {
     printf("execute %x \n", opcode);
     if(V[(opcode >> 8) & 0x000F] != V[(opcode >> 4) & 0x000F])
         pc += 2;
 }
-
+/// @brief Annn opcode
 void Chip8::LD_IADDR()
 {
     printf("execute %x \n", opcode);
     I = opcode & 0x0FFF;
 }
-
+/// @brief Bnnn opcode
 void Chip8::JMP_VADDR()
 {
     printf("execute %x \n", opcode);
     pc -= 2;
     pc = (opcode & 0x0FFF) + V[0];
 }
-
+/// @brief Cxkk opcode
 void Chip8::RND()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = ((rand() % 0xFF) & (opcode & 0x00FF));
 }
-
+/// @brief Dxyn opcode
 void Chip8::DRW()
 {
     printf("execute %x \n", opcode);
@@ -358,27 +324,27 @@ void Chip8::DRW()
     
     drawFlag = true;
 }
-
+/// @brief Ex9E opcode
 void Chip8::SKP()
 {
     printf("execute %x \n", opcode);
     if(key[V[(opcode & 0x0F00) >> 8]] != 0)
         pc += 2;
 }
-
-void Chip8::SKPN()
+/// @brief ExA1 opcode
+void Chip8::SKNP()
 {
     printf("execute %x \n", opcode);
     if(key[V[(opcode & 0x0F00) >> 8]] != 1)
         pc += 2;
 }
-
+/// @brief Fx07 opcode
 void Chip8::LD_DT()
 {
     printf("execute %x \n", opcode);
     V[(opcode >> 8) & 0x000F] = delay_timer;
 }
-
+/// @brief Fx0A opcode
 void Chip8::LD_K()
 {
     printf("execute %x \n", opcode);
@@ -392,19 +358,19 @@ void Chip8::LD_K()
     }
     pc-=2;
 }
-
+/// @brief Fx15 opcode
 void Chip8::LD_RDT()
 {
     printf("execute %x \n", opcode);
     delay_timer = V[(opcode >> 8) & 0x000F];
 }
-
+/// @brief Fx18 opcode
 void Chip8::LD_RST()
 {
     printf("execute %x \n", opcode);
     sound_timer = V[(opcode >> 8) & 0x000F];
 }
-
+/// @brief Fx1E opcode
 void Chip8::ADD_I()
 {
     printf("execute %x \n", opcode);
@@ -418,13 +384,13 @@ void Chip8::ADD_I()
         V[0XF] = 0;
     }
 }
-
+/// @brief Fx29 opcode
 void Chip8::LD_RF()
 {
     printf("execute %x \n", opcode);
     I = V[(opcode >> 8) & 0x000F] * 5;
 }
-
+/// @brief Fx33 opcode
 void Chip8::LD_RB()
 {
     //printf("execute %x \n", opcode);
@@ -432,7 +398,7 @@ void Chip8::LD_RB()
     memory[I+1] = ((V[(opcode >> 8) & 0x000F]/10)%10);
     memory[I+2] = ((V[(opcode >> 8) & 0x000F]%100)%10);
 }
-
+/// @brief Fx55 opcode
 void Chip8::LD_IREG()
 {
     for(int i = 0; i <= ((opcode >> 8) & 0x000F); i++)
@@ -441,7 +407,7 @@ void Chip8::LD_IREG()
     }
     I += ((opcode & 0x0F00) >> 8) + 1;
 }
-
+/// @brief Fx65 opcode
 void Chip8::LD_RIREG()
 {
     printf("execute %x \n", opcode);

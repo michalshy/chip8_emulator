@@ -65,6 +65,8 @@ constexpr char const* TITLE = "CHIP8_INTERPRETER";
 
 constexpr char const* MUSIC_PATH = "../resources/retro.wav";
 
+constexpr char const* GAME = "../games/pong1.ch8";
+
 #pragma endregion
 
 #endif //__GLOBALS

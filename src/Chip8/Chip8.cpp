@@ -48,7 +48,7 @@ void Chip8::Init()
 void Chip8::LoadGame()
 {
     FILE *file;
-    file = fopen("../games/pong1.ch8", "rb");
+    file = fopen(GAME, "rb");
     if(file == NULL)
     {
         perror("Error opening file!");
